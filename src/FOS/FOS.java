@@ -185,10 +185,10 @@ public class FOS extends HttpServlet {
 		
 		void toSeller(String UserName, HttpServletRequest request, HttpServletResponse response){
 			String sql="Select * from seller where sid='"+UserName+"'";
+			 String SellerData ="";
 			ResultSet rs;
 			try{
 				rs = st.executeQuery(sql);
-				 String SellerData ="";
 				 while(rs.next()){
 					 	String SellerID = rs.getString(1);
 					 	String Name = rs.getString(2);
@@ -196,17 +196,33 @@ public class FOS extends HttpServlet {
 					 	SellerData = SellerID + " " + Name + " " + Wallet + "//";
 				}
 				rs.close();
-				request.setAttribute("MyData", SellerData);
-				RequestDispatcher reqDispatcher = getServletConfig().getServletContext().getRequestDispatcher("/Seller.jsp");
-				try {
-					reqDispatcher.forward(request,response);
-				} catch (ServletException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
+			}
+			catch(SQLException e){e.printStackTrace();}
+			sql="Select a.name, a.address, e.name, d.quantity from users as a, userorder as b, orders as c,itemorder as d,item as e, sellerorder as f where f.sid='"+UserName+"' and f.oid=c.oid and f.oid=d.oid and b.uid=a.uid and d.iid=e.iid and c.DeliveryStatus='NotDelivered'";
+			String OrderData="";
+			ResultSet rs1;
+			try{
+				rs1 = st.executeQuery(sql);
+				 while(rs1.next()){
+					 	String UName = rs1.getString(1);
+					 	String UserAddress = rs1.getString(2);
+					 	String ItemName= rs1.getString(3);
+					 	String Quantity = rs1.getString(4);
+					 	OrderData += UName + " " + UserAddress + " " + ItemName + " " + Quantity + "//";
 				}
+				rs1.close();
 			}
 			catch(SQLException e){e.printStackTrace();}
 			
+			request.setAttribute("MyData", SellerData);
+			request.setAttribute("OrderData", OrderData);
+			RequestDispatcher reqDispatcher = getServletConfig().getServletContext().getRequestDispatcher("/Seller.jsp");
+			try {
+				reqDispatcher.forward(request,response);
+			} catch (ServletException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}

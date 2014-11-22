@@ -13,7 +13,7 @@
 <br>
 <a href="/FOS/HistorySeller.jsp">Click here to view your history</a>
 <br>
-<a href="/FOS/Stats.jsp">Click here to view your Stats</a>
+<a href="/FOS/Stats.jsp">Click here to view your Statistics</a>
 <br>
 <% 
 String Data=request.getAttribute("MyData").toString();
@@ -21,6 +21,12 @@ String TempArray[] = Data.split("//");
 String FinalArray[]=TempArray[0].split("\\s+");
 String SellerID = FinalArray[0];
 out.println("Hello Mr. "+FinalArray[1]+"! You have "+FinalArray[2]+" in your Wallet.");
+String Orders=request.getAttribute("OrderData").toString();
+String TempOrderArray[] = Orders.split("//");
+for(String s : TempOrderArray){
+	out.println(s);
+	out.println("\n");
+}
 %>
 <br>
 </body>
