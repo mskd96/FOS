@@ -79,34 +79,9 @@ public class FOS extends HttpServlet {
 				String UserId= request.getParameter("Username");
 		        String PassWd= request.getParameter("Password");
 		        String sor= request.getParameter("SellerOrUser");
-		        String sql="";
-		        if(sor.equals("Seller")){
-		        	sql="Select * from seller where sid='"+UserId+"' and password='"+PassWd+"'";
-		        }
-		        else if(sor.equals("User")){
-		        	sql="Select * from users where uid='"+UserId+"' and password='"+PassWd+"'";
-		        }
-		        try{
-		        	ResultSet rs;
-		        	rs = st.executeQuery(sql);
-		        	String found="";
-		        	if(conn1!=null){
-		        		while(rs.next()){
-		        			found=rs.getString("name");
-		        		}
-		        		rs.close();
-		        		if(found.equals("")){
-		        			response.sendRedirect("/FOS/Temp.jsp?name=Ettindhi!!");
-		        		}
-		        		else{
-		        			response.sendRedirect("/FOS/Temp.jsp?name=Raccha");
-		        		}
-		        	}
-		        }
-		        catch(SQLException ex){
-			    	ex.printStackTrace();
-			        System.out.println("HERE IS THE ERROR2");
-			    }
+		        boolean retVal=AuthenticateUser(UserId,PassWd,sor);
+		        if(retVal){response.sendRedirect("/FOS/Temp.jsp?name=Raccha");}
+		        else {response.sendRedirect("/FOS/Temp.jsp?name=Ettindhi!!");}
 		    }
 			else if(lor.equals("signup")){
 				String UserId= request.getParameter("Username");
@@ -139,4 +114,38 @@ public class FOS extends HttpServlet {
 			}
 		}
 		}
+		
+		boolean AuthenticateUser(String UserName, String PassWd, String sor){
+			String sql="";
+			boolean ret=false;
+			if(sor.equals("Seller")){
+	        	sql="Select * from seller where sid='"+UserName+"' and password='"+PassWd+"'";
+	        }
+	        else if(sor.equals("User")){
+	        	sql="Select * from users where uid='"+UserName+"' and password='"+PassWd+"'";
+	        }
+	        try{
+	        	ResultSet rs;
+	        	rs = st.executeQuery(sql);
+	        	String found="";
+	        	if(conn1!=null){
+	        		while(rs.next()){
+	        			found=rs.getString("name");
+	        		}
+	        		rs.close();
+	        		if(found.equals("")){
+	        			ret=false;
+	        		}
+	        		else{
+	        			ret=true;
+	        		}
+	        	}
+	        }
+	        catch(SQLException ex){
+		    	ex.printStackTrace();
+		        System.out.println("HERE IS THE ERROR2");
+		    }
+	        return ret;
+		}
+	
 	}
