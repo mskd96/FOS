@@ -19,8 +19,8 @@
 String Data=request.getAttribute("MyData").toString();
 String TempArray[] = Data.split("//");
 String FinalArray[]=TempArray[0].split("\\s+");
-
-out.println("Hello Mr. "+FinalArray[0]+"! You have "+FinalArray[1]+" in your Wallet.");
+String SellerID = FinalArray[0];
+out.println("Hello Mr. "+FinalArray[1]+"! You have "+FinalArray[2]+" in your Wallet.");
 %>
 <br>
 </body>

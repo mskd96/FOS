@@ -190,10 +190,10 @@ public class FOS extends HttpServlet {
 				rs = st.executeQuery(sql);
 				 String SellerData ="";
 				 while(rs.next()){
-					 	//String name = rs.getString(1);
+					 	String SellerID = rs.getString(1);
 					 	String Name = rs.getString(2);
 					 	String Wallet = rs.getString(5);
-					 	SellerData = Name + " " + Wallet + "//";
+					 	SellerData = SellerID + " " + Name + " " + Wallet + "//";
 				}
 				rs.close();
 				request.setAttribute("MyData", SellerData);
