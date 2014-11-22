@@ -80,7 +80,11 @@ public class FOS extends HttpServlet {
 		        String PassWd= request.getParameter("Password");
 		        String sor= request.getParameter("SellerOrUser");
 		        boolean retVal=AuthenticateUser(UserId,PassWd,sor);
-		        if(retVal){response.sendRedirect("/FOS/Temp.jsp?name=Raccha");}
+		        if((retVal)&&(sor.equals("User"))){toUser(UserId,request,response);}
+		        if((retVal)&&(sor.equals("Seller"))){toSeller(UserId,request,response);}
+		        //if((retVal)&&(sor.equals("Seller"))){response.sendRedirect("/FOS/Seller.jsp?name=Raccha");}
+		        //System.out.println(retVal);
+		        //if((retVal)&&(sor.equals("User"))){response.sendRedirect("/FOS/Temp.jsp?name=Raccha");}
 		        else {response.sendRedirect("/FOS/Temp.jsp?name=Ettindhi!!");}
 		    }
 			else if(lor.equals("signup")){
@@ -147,5 +151,62 @@ public class FOS extends HttpServlet {
 		    }
 	        return ret;
 		}
-	
+		
+		void toUser(String uid, HttpServletRequest request, HttpServletResponse response)
+		{
+			String q1 = "Select * from seller";
+			ResultSet rs;
+			try {
+				 rs = st.executeQuery(q1);
+				 String SellerData ="";
+				 while(rs.next())
+					{	String id = rs.getString(1);
+					 	String name = rs.getString(2);
+					 	String address = rs.getString(3);
+					 	SellerData = SellerData + name + " " + address + "//";
+					}
+				 request.setAttribute("data", SellerData);
+				 request.setAttribute("id",uid);	
+					RequestDispatcher reqDispatcher = getServletConfig().getServletContext().getRequestDispatcher("/User.jsp");
+					try {
+						reqDispatcher.forward(request,response);
+					} catch (ServletException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		void toSeller(String UserName, HttpServletRequest request, HttpServletResponse response){
+			String sql="Select * from seller where sid='"+UserName+"'";
+			ResultSet rs;
+			try{
+				rs = st.executeQuery(sql);
+				 String SellerData ="";
+				 while(rs.next()){
+					 	//String name = rs.getString(1);
+					 	String Name = rs.getString(2);
+					 	String Wallet = rs.getString(5);
+					 	SellerData = Name + " " + Wallet + "//";
+				}
+				rs.close();
+				request.setAttribute("MyData", SellerData);
+				RequestDispatcher reqDispatcher = getServletConfig().getServletContext().getRequestDispatcher("/Seller.jsp");
+				try {
+					reqDispatcher.forward(request,response);
+				} catch (ServletException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			catch(SQLException e){e.printStackTrace();}
+			
+		}
 	}
