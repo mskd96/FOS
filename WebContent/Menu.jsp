@@ -4,17 +4,28 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+<title>Seller Menu</title>
 </head>
 <body>
 
-<table>
+<table CELLPADDING="3" CELLSPACING="1">
 <%String S=request.getAttribute("MyMenu").toString(); 
 String sid=request.getAttribute("MySID").toString();
 String InsertString="/FOS/InsertItems.jsp?sid="+sid;
 String[] SingleLine=S.split("//");
 for(String line: SingleLine){
-	%> <tr> <%out.println(line);%> </tr> <% 
+	String[] parts=line.split("@");
+	if(parts.length>4){
+		%>
+		<tr>
+		<td> <%out.println(parts[0]); %></td>
+		<td> <%out.println(parts[1]); %></td>
+		<td> <%out.println(parts[2]); %></td>
+		<td> <%out.println(parts[3]); %></td>
+		<td> <%out.println(parts[4]); %></td>
+		</tr>
+		<%
+	}
 }
 %>
 

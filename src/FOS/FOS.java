@@ -124,15 +124,22 @@ public class FOS extends HttpServlet {
 			String sid=request.getParameter("sid");
 			if(name.equals("Menu")){
 				String Output="";
-				String sql="Select * from menu where sid='"+sid+"'";
+				String sql="SELECT name,isveg,cuisine,cost,exptime from item join menu on item.iid=menu.iid where menu.sid='"+sid+"'";
+				//String sql="Select * from menu where sid='"+sid+"'";
 				ResultSet rs1;
 				try{
 					rs1 = st.executeQuery(sql);
       				 while(rs1.next()){
-						 	String iid = rs1.getString(2);
-						 	String cost = rs1.getString(3);
-						 	String exptime = rs1.getString(4);
-						 	Output += iid + "@" + cost + "@" + exptime +  "//";
+      					 
+      					 	String ItemName = rs1.getString(1);
+						 	String isveg = rs1.getString(2);
+						 	if(isveg.equals("1")){isveg="Vegetarian";}
+						 	else{isveg="Non-Vegetarian";}
+						 	String cuisine = rs1.getString(3);
+						 	cuisine=getCuisineName(cuisine);
+						 	String cost = rs1.getString(4);
+						 	String exptime = rs1.getString(1);
+						 	Output += ItemName + "@" + isveg + "@" + cuisine + "@" + cost + "@" + exptime +  "//";
 					}
 					rs1.close();
 				}
@@ -408,7 +415,7 @@ public class FOS extends HttpServlet {
 				String qSeller = "select * from seller where sid = '" + SellerId + "'";
 				ResultSet rs= st.executeQuery(qUser);
 				rs.next();
-				UserData = rs.getString(1) + "@" + rs.getString(2) + "@" + rs.getString(3);//Change delimiter
+				UserData = rs.getString("uid") + "@" + rs.getString("name") + "@" + rs.getString("wallet");//Change delimiter
 				rs= st.executeQuery(qSeller);
 				rs.next();
 				SellerData = rs.getString(1) + "@" + rs.getString(2) + "@" + rs.getString(3);//Change delimiter

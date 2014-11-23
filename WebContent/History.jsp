@@ -8,8 +8,8 @@
 </head>
 <body>
 
-
-<table>
+ <div style="width:30%; margin:0 auto;text-align:center;">
+<table  CELLPADDING="3" CELLSPACING="1">
 <%String S=request.getAttribute("MyHistory").toString(); 
 String sid=request.getAttribute("MySID").toString();
 String[] SingleLine=S.split("//");
@@ -28,5 +28,6 @@ for(String line: SingleLine){
 }
 %>
 </table>
+</div>
 </body>
 </html>
