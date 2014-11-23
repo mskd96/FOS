@@ -9,12 +9,6 @@
 <body>
 <a href="/FOS/Home.html">Logout</a>
 <br>
-<a href="/FOS/Menu.jsp">Click here to change menu</a>
-<br>
-<a href="/FOS/HistorySeller.jsp">Click here to view your history</a>
-<br>
-<a href="/FOS/Stats.jsp">Click here to view your Statistics</a>
-<br>
 <% 
 String sid=request.getAttribute("SIDPassing").toString();
 String Data=request.getAttribute("MyData").toString();
@@ -26,7 +20,15 @@ String Orders=request.getAttribute("OrderData").toString();
 String SingleOrderArray[] = Orders.split("//");
 System.out.println("Length is "+SingleOrderArray.length);
 String testing=request.getAttribute("testing").toString();
+String MenuRef="/FOS/FOS?name=Menu&from=8&sid="+sid;
+String StatsRef="/FOS/FOS?name=Stats&from=8&sid="+sid;
+String HistoryRef="/FOS/FOS?name=History&from=8&sid="+sid;
 %>
+<a href=<%out.println(MenuRef);%>>Click here to change menu</a>
+<br>
+<a href=<%out.println(StatsRef);%>>Click here to view Stats</a>
+<br>
+<a href=<%out.println(HistoryRef);%>>Click here to view History</a>
 <br>
 <form action="FOS" method="post"> 
 <%

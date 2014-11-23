@@ -67,7 +67,69 @@ public class FOS extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		
+		String num=request.getParameter("from");
+		if(num.equals("8")){
+			String name=request.getParameter("name");
+			String sid=request.getParameter("sid");
+			if(name.equals("Menu")){
+				String Output="";
+				String sql="Select * from menu where sid='"+sid+"'";
+				ResultSet rs1;
+				try{
+					rs1 = st.executeQuery(sql);
+      				 while(rs1.next()){
+						 	String iid = rs1.getString(2);
+						 	String cost = rs1.getString(3);
+						 	String exptime = rs1.getString(4);
+						 	Output += iid + "|||" + cost + "|||" + exptime +  "//";
+					}
+					rs1.close();
+				}
+				catch(SQLException e){e.printStackTrace();}
+				request.setAttribute("MyMenu", Output);
+				request.setAttribute("MySID", sid);
+				RequestDispatcher reqDispatcher = getServletConfig().getServletContext().getRequestDispatcher("/Menu.jsp");
+				try {
+					reqDispatcher.forward(request,response);
+				} catch (ServletException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				
+			}
+			
+			if(name.equals("History")){
+				String sql="Select  f.oid, a.name, e.name, d.quantity from users as a, userorder as b, orders as c,itemorder as d,item as e, sellerorder as f where f.sid='"+sid+"' and f.oid=c.oid and f.oid=b.oid and f.oid=d.oid and b.uid=a.uid and d.iid=e.iid";
+				ResultSet rs1;
+				String Output="";
+				try{
+					rs1 = st.executeQuery(sql);
+      				 while(rs1.next()){
+						 	String oid = rs1.getString(1);
+						 	String UserName = rs1.getString(2);
+						 	String ItemName = rs1.getString(3);
+						 	String ItemQuantity = rs1.getString(4);
+						 	Output += oid + "|||" + UserName + "|||" + ItemName + "|||" + ItemQuantity +  "//";
+					}
+					rs1.close();
+				}
+				catch(SQLException e){e.printStackTrace();}
+				request.setAttribute("MyHistory", Output);
+				request.setAttribute("MySID", sid);
+				RequestDispatcher reqDispatcher = getServletConfig().getServletContext().getRequestDispatcher("/History.jsp");
+				try {
+					reqDispatcher.forward(request,response);
+				} catch (ServletException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				
+			}
+			
+			
+		}
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -82,14 +144,8 @@ public class FOS extends HttpServlet {
 		        String PassWd= request.getParameter("Password");
 		        String sor= request.getParameter("SellerOrUser");
 		        boolean retVal=AuthenticateUser(UserId,PassWd,sor);
-		        //System.out.println("PRINTING OUT BOOL VALUES");
-		        //System.out.println(retVal);
-		        //System.out.println("PRINTED BOOL VALUES");
 		        if((retVal)&&(sor.equals("User"))){toUser(UserId,request,response);}
 		        if((retVal)&&(sor.equals("Seller"))){toSeller(UserId,request,response);}
-		        //if((retVal)&&(sor.equals("Seller"))){response.sendRedirect("/FOS/Seller.jsp?name=Raccha");}
-		        //System.out.println(retVal);
-		        //if((retVal)&&(sor.equals("User"))){response.sendRedirect("/FOS/Temp.jsp?name=Raccha");}
 		        else {response.sendRedirect("/FOS/Temp.jsp?name=Ettindhi!!");}
 		    }
 			else if(lor.equals("signup")){
@@ -98,9 +154,6 @@ public class FOS extends HttpServlet {
 		        String Address= request.getParameter("Address");
 		        String Name= request.getParameter("Name");
 		        String sor= request.getParameter("SellerOrUser");
-		      //  System.out.println("*****");
-		      //  System.out.println(Name);
-		      //  System.out.println("*****");
 		        String sql="";
 		        if(sor.equals("Seller")){sql="insert into seller values(?,?,?,?)";}
 		        else if(sor.equals("User")){sql="insert into users values(?,?,?,?)";}
@@ -204,6 +257,30 @@ public class FOS extends HttpServlet {
 	        }
 	        toSeller(sid,request,response);
 		} 
+		
+		if(num.equals("12")){
+			String sid=request.getParameter("sid");
+			String ItemID=request.getParameter("ItemId");
+			String Cost=request.getParameter("Cost");
+			String Hours=request.getParameter("Hours");
+			String Minutes=request.getParameter("Minutes");
+			String Seconds=request.getParameter("Seconds");
+			String Interval=Hours+":"+Minutes+":"+Seconds;
+			String sql="insert into menu values(?,?,?,?)";
+	        try{
+	        	PreparedStatement pStmt=conn1.prepareStatement(sql);
+	        	pStmt.setString(1,sid);
+	        	pStmt.setString(2,ItemID);
+	        	pStmt.setString(3,Cost);
+	        	pStmt.setString(4,Interval);
+	        	pStmt.executeUpdate();
+	        	response.sendRedirect("/FOS/Temp.jsp?name=Successful");
+	        }
+	        catch(SQLException e){
+	        	response.sendRedirect("/FOS/Temp.jsp?name=Dobbindhi"); // Should Wirte code for different kinds of errors
+	        }
+
+		}
 		}
 		
 		boolean AuthenticateUser(String UserName, String PassWd, String sor){
