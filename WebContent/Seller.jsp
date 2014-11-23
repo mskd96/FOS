@@ -13,7 +13,7 @@
 String sid=request.getAttribute("SIDPassing").toString();
 String Data=request.getAttribute("MyData").toString();
 String TempArray[] = Data.split("//");
-String FinalArray[]=TempArray[0].split("\\s+");
+String FinalArray[]=TempArray[0].split("@");
 String SellerID = FinalArray[0];
 out.println("Hello Mr. "+FinalArray[1]+"! You have "+FinalArray[2]+" in your Wallet.");
 String Orders=request.getAttribute("OrderData").toString();
@@ -33,7 +33,7 @@ String HistoryRef="/FOS/FOS?name=History&from=8&sid="+sid;
 <form action="FOS" method="post"> 
 <%
 for(String s : SingleOrderArray){
-	String SingleOrderPartsArray[]=s.split("\\s+");
+	String SingleOrderPartsArray[]=s.split("@");
 	String OutPut="";
 	String mid="";
 	if(SingleOrderPartsArray.length>1){

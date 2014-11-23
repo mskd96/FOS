@@ -14,11 +14,10 @@
 String sid=request.getAttribute("MySID").toString();
 String[] SingleLine=S.split("//");
 for(String line: SingleLine){
-	String[] parts=line.split("|||");
+	String[] parts=line.split("@");
 	if(parts.length>3){
 	%> 
 	<tr> 
-		<td> <% out.println(line); %> </td>
 		 <td> <%out.println(parts[0]);%> </td>
 		 <td> <%out.println(parts[1]);%> </td>
 		 <td> <%out.println(parts[2]);%> </td>
