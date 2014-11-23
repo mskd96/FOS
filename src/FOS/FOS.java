@@ -259,9 +259,10 @@ public class FOS extends HttpServlet {
 			System.out.println("SID is "+sid);
 			String boolCheck=request.getParameter("boolCheck");
 			System.out.println("boolCheck is "+boolCheck);
-			String[] values={""};
+			String[] values={};
 			if(boolCheck.equals("1")){values= request.getParameterValues("OrderIds");}
-	        System.out.println("VAlues length is "+values.length);
+	        if(values!=null){
+			System.out.println("VAlues length is "+values.length);
 	        int amount=0;
 	        for(int i=0;i<values.length;i++){
 	        	String sqltemp="SELECT itemorder.quantity,menu.cost from itemorder,menu where itemorder.oid='"+values[i]+"' and itemorder.iid=menu.iid and menu.sid='"+sid+"'";	
@@ -335,6 +336,7 @@ public class FOS extends HttpServlet {
 					e.printStackTrace();
 				}
 	        }
+	        }
 	        toSeller(sid,request,response);
 		} 
 		
@@ -380,6 +382,7 @@ public class FOS extends HttpServlet {
 			if(SelectedCuisine.equals("")) SelectedCuisine = null;
 			toUser(uid, request, response, SelectedCuisine);
 		}
+		
 		else if(num.equals("4"))
 		{
 			System.out.println("uid");
@@ -488,6 +491,36 @@ public class FOS extends HttpServlet {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		}
+		
+		if(num.equals("9")){
+			//response.sendRedirect("/FOS/Temp.jsp?name=BaneAyindhi");
+			String sid=request.getParameter("SidPassing");
+			String boolCheck=request.getParameter("boolCheck");
+			System.out.println("boolCheck is "+boolCheck);
+			String[] values={};
+			System.out.println("BoolCheck is "+boolCheck);
+			String QueryString=request.getQueryString();
+			System.out.println("Query String is "+QueryString);
+			if(boolCheck.equals("1")){values= request.getParameterValues("DeletedItems");}
+	        if(values != null){
+	
+			System.out.println("VAlues length is "+values.length);
+			for(int i=0;i<values.length;i++){
+				String sql="delete from menu where sid='"+sid+"' and iid='"+values[i]+"'";
+				try {
+					st.executeUpdate(sql);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					
+					e.printStackTrace();
+				}
+				
+			}
+	        }
+			System.out.println("YOO!! Came here");
+			toSeller(sid,request,response);
+			
 		}
 		
 		}
@@ -693,14 +726,16 @@ public class FOS extends HttpServlet {
 			request.setAttribute("MyData", SellerData);
 			request.setAttribute("OrderData", OrderData);
 			request.setAttribute("SIDPassing",PersonalData);
+			System.out.println("Error AAGAYAAAA");
 			RequestDispatcher reqDispatcher = getServletConfig().getServletContext().getRequestDispatcher("/Seller.jsp");
 			try {
 				reqDispatcher.forward(request,response);
 			} catch (ServletException e) {
 				System.out.println("POSITION 3");
-				e.printStackTrace();
+				//e.printStackTrace();
 			} catch (IOException e) {
-				e.printStackTrace();
+				System.out.println("POSITION 4");
+				//e.printStackTrace();
 			}
 		}
 	}
