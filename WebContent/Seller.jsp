@@ -16,18 +16,38 @@
 <a href="/FOS/Stats.jsp">Click here to view your Statistics</a>
 <br>
 <% 
+String sid=request.getAttribute("SIDPassing").toString();
 String Data=request.getAttribute("MyData").toString();
 String TempArray[] = Data.split("//");
 String FinalArray[]=TempArray[0].split("\\s+");
 String SellerID = FinalArray[0];
 out.println("Hello Mr. "+FinalArray[1]+"! You have "+FinalArray[2]+" in your Wallet.");
 String Orders=request.getAttribute("OrderData").toString();
-String TempOrderArray[] = Orders.split("//");
-for(String s : TempOrderArray){
-	out.println(s);
-	out.println("\n");
+String SingleOrderArray[] = Orders.split("//");
+System.out.println("Length is "+SingleOrderArray.length);
+String testing=request.getAttribute("testing").toString();
+%>
+<br>
+<form action="FOS" method="post"> 
+<%
+for(String s : SingleOrderArray){
+	String SingleOrderPartsArray[]=s.split("\\s+");
+	String OutPut="";
+	String mid="";
+	if(SingleOrderPartsArray.length>1){
+		OutPut=SingleOrderPartsArray[0]+" "+SingleOrderPartsArray[1]+" "+SingleOrderPartsArray[2]+" "+SingleOrderPartsArray[3]+" ";
+		mid=SingleOrderPartsArray[4];	
+	};
+	%>
+	<input type="checkbox" name="OrderIds" value=<%out.println(mid);%> > <% out.println(OutPut); %> <br> 
+	<%
 }
 %>
+<input type="checkbox" name="OrderIds" value="1000">
+<input type="hidden" name="from" value = "8">
+<input type="hidden" name="SidPassing" value = <%out.println(sid);%>>
+<input type="submit" name="submitvalue" value="login">
+</form>
 <br>
 </body>
 </html>
