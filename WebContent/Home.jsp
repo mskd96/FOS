@@ -49,6 +49,10 @@
 <tr><td align = "center"><input type="submit" name="submitvalue" value="login" id="ohmygod"></td></tr>
 </form>
 </table>
+<% 
+   String s = request.getParameter("ErrorMsg");
+   if(s != null)out.println(s);
+   %>
 </div>
 <div style="float:right;padding: 10%;">
 <table>
@@ -80,6 +84,11 @@ Password
 <tr><td align="right"><input type="submit" name="submitvalue" value="signup" id="ohmygod"></td></tr>
 </form>
 </table>
+<% 
+   String re = request.getParameter("RegistrationError");
+   if(re != null)out.println(re);
+   %>
+
 </div>
    </BODY>
 </HTML>

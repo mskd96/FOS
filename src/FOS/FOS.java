@@ -124,7 +124,7 @@ public class FOS extends HttpServlet {
 			String sid=request.getParameter("sid");
 			if(name.equals("Menu")){
 				String Output="";
-				String sql="SELECT name,isveg,cuisine,cost,exptime from item join menu on item.iid=menu.iid where menu.sid='"+sid+"'";
+				String sql="SELECT name,isveg,cuisine,cost,exptime,menu.iid from item join menu on item.iid=menu.iid where menu.sid='"+sid+"'";
 				//String sql="Select * from menu where sid='"+sid+"'";
 				ResultSet rs1;
 				try{
@@ -138,8 +138,9 @@ public class FOS extends HttpServlet {
 						 	String cuisine = rs1.getString(3);
 						 	cuisine=getCuisineName(cuisine);
 						 	String cost = rs1.getString(4);
-						 	String exptime = rs1.getString(1);
-						 	Output += ItemName + "@" + isveg + "@" + cuisine + "@" + cost + "@" + exptime +  "//";
+						 	String exptime = rs1.getString(5);
+						 	String iid=rs1.getString(6);
+						 	Output += ItemName + "@" + isveg + "@" + cuisine + "@" + cost + "@" + exptime + "@" + iid + "//";
 					}
 					rs1.close();
 				}
@@ -195,8 +196,6 @@ public class FOS extends HttpServlet {
 		//System.out.println("*******************CAME HERE************");
 		String num=request.getParameter("from");
 		
-		
-		
 		if(num.equals("2")){
 			//System.out.println("*******************CAME HERE************");
 			String lor=request.getParameter("submitvalue");
@@ -209,13 +208,25 @@ public class FOS extends HttpServlet {
 		        System.out.println("SOR IS "+sor);
 		        if((retVal)&&(sor.equals("User"))){System.out.println("???????????????????????");toUser(UserId,request,response,null);}
 		        if((retVal)&&(sor.equals("Seller"))){toSeller(UserId,request,response);}
-		        else {response.sendRedirect("/FOS/Temp.jsp?name=Ettindhi!!");}
+		        else {response.sendRedirect("/FOS/Home.jsp?ErrorMsg=Username or Password is invalid!!");}
 		    }
 			else if(lor.equals("signup")){
 				String UserId= request.getParameter("Username");
 		        String PassWd= request.getParameter("Password");
 		        String Address= request.getParameter("Address");
 		        String Name= request.getParameter("Name");
+		        System.out.println(UserId);
+		        if(Name == null || Name.isEmpty()){
+		        	System.out.println("Came here");
+		        	response.sendRedirect("/FOS/Home.jsp?RegistrationError=Name should not be empty.");
+		        	System.out.println("Came here too");
+		        }
+		        else if(Address == null || Address.isEmpty()){
+		        	System.out.println("Came here");
+		        	response.sendRedirect("/FOS/Home.jsp?RegistrationError=Address should not be empty.");
+		        	System.out.println("Came here too");
+		        }
+		        else{
 		        String sor= request.getParameter("SellerOrUser");
 		        String sql="";
 		        if(sor.equals("Seller")){sql="insert into seller values(?,?,?,?)";}
@@ -227,24 +238,30 @@ public class FOS extends HttpServlet {
 		        	pStmt.setString(3,Address);
 		        	pStmt.setString(4,PassWd);
 		        	pStmt.executeUpdate();
-		        	response.sendRedirect("/FOS/Temp.jsp?name=Raccha");
+		        	if(sor.equals("Seller")){toSeller(UserId,request,response);}
+		        	else{toUser(UserId,request,response,null);}
+		        	//response.sendRedirect("/FOS/Temp.jsp?name=Raccha");
 		        }
 		        catch(SQLException e){
 		        	String ErrorState=e.getSQLState();
 		        	System.out.println("Caught SQLException " + e.getErrorCode() + "/" + e.getSQLState() + " " +   
                             e.getMessage() ) ;
-		        	if(ErrorState.equals("23505")){response.sendRedirect("/FOS/Temp.jsp?name=SelectAnotherUserId");}
-		        	if(ErrorState.equals("23514")){response.sendRedirect("/FOS/Temp.jsp?name=Password Length Must be>=4");}
+		        	if(ErrorState.equals("22001")){response.sendRedirect("/FOS/Home.jsp?RegistrationError=Username should not exceed 5 digits.");}
+		        	if(ErrorState.equals("23505")){response.sendRedirect("/FOS/Home.jsp?RegistrationError=Select another user Id.");}
+		        	if(ErrorState.equals("23514")){response.sendRedirect("/FOS/Home.jsp?RegistrationError=Password length must be>=4 digits.");}
+		        }
 		        }
 			}
 		}
 		
 		if(num.equals("8")){
-			
-			System.out.println("CAME HERE");
-			//response.sendRedirect("/FOS/Temp.jsp?name=Working");
 			String sid=request.getParameter("SidPassing");
-	        String[] values= request.getParameterValues("OrderIds");
+			System.out.println("SID is "+sid);
+			String boolCheck=request.getParameter("boolCheck");
+			System.out.println("boolCheck is "+boolCheck);
+			String[] values={""};
+			if(boolCheck.equals("1")){values= request.getParameterValues("OrderIds");}
+	        System.out.println("VAlues length is "+values.length);
 	        int amount=0;
 	        for(int i=0;i<values.length;i++){
 	        	String sqltemp="SELECT itemorder.quantity,menu.cost from itemorder,menu where itemorder.oid='"+values[i]+"' and itemorder.iid=menu.iid and menu.sid='"+sid+"'";	

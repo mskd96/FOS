@@ -39,8 +39,13 @@ String HistoryRef="/FOS/FOS?name=History&from=8&sid="+sid;
 <div style="width:40%; margin:0 auto;text-align:center;">
  <%out.println("Hello Mr. "+FinalArray[1]+"! You have "+FinalArray[2]+" in your Wallet."); %>
 <form action="FOS" method="post"> 
+
+
 <%
+String boolCheck="0";
 for(String s : SingleOrderArray){
+	if(s.equals("")){System.out.println("*************HELLO BITCH***************");continue;}
+	System.out.println("*******!!!!!!!!!!!!!!!!!!*******");
 	String SingleOrderPartsArray[]=s.split("@");
 	String OutPut="";
 	String mid="";
@@ -49,6 +54,7 @@ for(String s : SingleOrderArray){
 		mid=SingleOrderPartsArray[4];	
 	};
 	if(!(mid.equals(""))){
+	boolCheck="1";
 	%>
 	<input type="checkbox" name="OrderIds" value=<%out.println(mid);%> > <% out.println(OutPut); %> <br> 
 	<%
@@ -56,6 +62,7 @@ for(String s : SingleOrderArray){
 }
 %>
 
+<input type="hidden" name="boolCheck" value=<%out.println(boolCheck); %>>
 <input type="hidden" name="from" value = "8">
 <input type="hidden" name="SidPassing" value = <%out.println(sid);%>>
 <input type="submit" name="submitvalue" value="Make Delivered">

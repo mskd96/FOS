@@ -14,7 +14,7 @@ String sid=request.getAttribute("MySID").toString();
 String InsertString="/FOS/InsertItems.jsp?sid="+sid;
 String[] SingleLine=S.split("//");
 for(String line: SingleLine){
-	String[] parts=line.split("@");
+	String[] parts=line.split("@");  //Parts[5] is iid
 	if(parts.length>4){
 		%>
 		<tr>
