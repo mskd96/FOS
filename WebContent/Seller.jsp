@@ -38,15 +38,16 @@ for(String s : SingleOrderArray){
 		OutPut=SingleOrderPartsArray[0]+" "+SingleOrderPartsArray[1]+" "+SingleOrderPartsArray[2]+" "+SingleOrderPartsArray[3]+" ";
 		mid=SingleOrderPartsArray[4];	
 	};
+	if(!(mid.equals(""))){
 	%>
 	<input type="checkbox" name="OrderIds" value=<%out.println(mid);%> > <% out.println(OutPut); %> <br> 
 	<%
+	}
 }
 %>
-<input type="checkbox" name="OrderIds" value="1000">
 <input type="hidden" name="from" value = "8">
 <input type="hidden" name="SidPassing" value = <%out.println(sid);%>>
-<input type="submit" name="submitvalue" value="login">
+<input type="submit" name="submitvalue" value="Make Delivered">
 </form>
 <br>
 </body>
