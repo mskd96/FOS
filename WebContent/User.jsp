@@ -12,8 +12,11 @@ String ArrayUser[] = DataUser.split("@");%>
 <div style="width:100%;height = 50px;background:#F9EECF;border:1px dotted black;">
 <center>
 <a href="/FOS/Wallet.jsp?UserData=<%out.println(DataUser); %>"><div style="width:20%;height = 50px;background:#F9EECF;border:1px dotted black;float:left;">wallet</div></a>
-<a href="editdetails"><div style="width:20%;height = 50px;background:#F9EECF;border:1px dotted black;float:left;">edit details</div></a>
-<a href="svag"><div style="width:20%;height = 50px;background:#F9EECF;border:1px dotted black;float:left;">history</div></a>
+<% String edit="/FOS/EditDetails.jsp?uid="+ArrayUser[0]; 
+String history="FOS?from=63&uid="+ArrayUser[0]; %>
+
+<a href=<%out.println(edit); %>><div style="width:20%;height = 50px;background:#F9EECF;border:1px dotted black;float:left;">Edit details</div></a>
+<a href=<%out.println(history); %>><div style="width:20%;height = 50px;background:#F9EECF;border:1px dotted black;float:left;">History</div></a>
 <a href="Home.jsp"><div style="width:20%;height = 50px;background:#F9EECF;border:1px dotted black;float:left;">Logout</div></a>
 </center>
 </div>

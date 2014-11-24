@@ -19,13 +19,19 @@ String ArrayUser[] = UserData.split("@");%>
 
 
 <FORM action="FOS" method = "post">
-<input type = "hidden" name = "UserData" value =<%out.println(UserData); %> >
+<input type = "hidden" name = "UserID" value =<%out.println(ArrayUser[0]); %> >
 <input type = "hidden" name = "from" value = "6">
 enter amount:<input type = "text" name = "Amount"></br>
 enter password:<input type = "password" name = "Passkey"></br>
 <input type="submit" name="submitvalue" value="Auth">
 </FORM>
 
+<% 
+String s= request.getParameter("ErrorMsg");
+if(s != null) out.println(s);
+String output="FOS?from=36&uid="+ArrayUser[0];
+%>
+<a href=<%out.println(output);%>>Home</a>
 
 </body>
 </html>

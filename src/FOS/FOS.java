@@ -166,17 +166,19 @@ public class FOS extends HttpServlet {
 			}
 			
 			if(name.equals("History")){
-				String sql="Select  f.oid, a.name, e.name, d.quantity from users as a, userorder as b, orders as c,itemorder as d,item as e, sellerorder as f where f.sid='"+sid+"' and f.oid=c.oid and f.oid=b.oid and f.oid=d.oid and b.uid=a.uid and d.iid=e.iid";
+				String sql="SELECT a.name,f.name,e.quantity,c.timestamp,g.cost,g.exptime from users as a,userorder as b,orders as c, sellerorder as d,itemorder as e,item as f, menu as g where d.sid='"+sid+"' and d.oid=c.oid and d.oid=b.oid and d.oid=e.oid and a.uid=b.uid and e.iid=f.iid and f.iid=g.iid and g.sid='"+sid+"' and c.deliverystatus='Delivered'";
 				ResultSet rs1;
 				String Output="";
 				try{
 					rs1 = st.executeQuery(sql);
       				 while(rs1.next()){
-						 	String oid = rs1.getString(1);
-						 	String UserName = rs1.getString(2);
-						 	String ItemName = rs1.getString(3);
-						 	String ItemQuantity = rs1.getString(4);
-						 	Output += oid + "@" + UserName + "@" + ItemName + "@" + ItemQuantity +  "//";
+						 	String UserName = rs1.getString(1);
+						 	String ItemName = rs1.getString(2);
+						 	String Quantity = rs1.getString(3);
+						 	String TimeStamp = rs1.getString(4);
+						 	String Cost = rs1.getString(5);
+						 	String ExpTime = rs1.getString(6);
+						 	Output +=  UserName + "@" + ItemName + "@" + Quantity +"@" + TimeStamp +"@" + Cost +"@" + ExpTime +  "//";
 					}
 					rs1.close();
 				}
@@ -283,8 +285,26 @@ public class FOS extends HttpServlet {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}		// Should insert for each item
-				response.sendRedirect("/FOS/Temp.jsp?name=OderPlaced");
+				
+				String sqltemp="UPDATE seller set wallet=wallet+"+amount+" where sid='"+SellerID+"'";
+		        try {
+					st.executeUpdate(sqltemp);
+				} catch (SQLException e) {
+					e.printStackTrace();
+			        System.out.println("********************3**************");
+				}
+		        
+		        sqltemp="UPDATE users set wallet=wallet-"+amount+" where uid='"+UserID+"'";
+	        	try {
+					st.executeUpdate(sqltemp);
+				} catch (SQLException e) {
+					System.out.println("****************6************");
+					e.printStackTrace();
+				}
+		        
+	        	toUser(UserID,request,response,null);
 			}
+			
 			else{
 				toUser(UserID,request,response,null);
 			}
@@ -371,6 +391,52 @@ public class FOS extends HttpServlet {
 			}
 		}
 		
+		if(num.equals("36")){
+			String uid=request.getParameter("uid");
+			toUser(uid,request,response,null);
+		}
+		
+		
+		if(num.equals("63")){
+			String uid=request.getParameter("uid");
+			String sql="SELECT d.name,f.name,e.quantity,b.timestamp,g.cost,b.deliverystatus,g.exptime from userorder as a, orders as b,sellerorder as c,seller as d, itemorder as e,item as f, menu as g where a.uid='"+uid+"' and a.oid=c.oid and a.oid=e.oid and a.oid=b.oid and c.sid=d.sid and e.iid=f.iid and f.iid=g.iid and d.sid=g.sid;";
+			ResultSet rs1;
+			String Pending="";
+			String History="";
+			try{
+				rs1 = st.executeQuery(sql);
+  				 while(rs1.next()){
+					 	String SName = rs1.getString(1);
+					 	String ItemName = rs1.getString(2);
+					 	String Quantity = rs1.getString(3);
+					 	String TimeStamp = rs1.getString(4);
+					 	String Cost = rs1.getString(5);
+					 	String DeliveryStatus = rs1.getString(6);
+					 	String Exptime = rs1.getString(7);
+					 	if(DeliveryStatus.equals("NotDelivered")){
+					 		Pending += SName + "@" + ItemName + "@" + Quantity + "@" + TimeStamp + "@" + Cost + "@" + Exptime + "//";
+					 	}
+					 	else{
+					 		History += SName + "@" + ItemName + "@" + Quantity + "@" + TimeStamp + "@" + Cost + "@" + Exptime +  "//";
+					 	}
+					 	
+				}
+				rs1.close();
+			}
+			catch(SQLException e){e.printStackTrace();}
+			request.setAttribute("History", History);
+			request.setAttribute("Pending", Pending);
+			request.setAttribute("MyUID", uid);
+			RequestDispatcher reqDispatcher = getServletConfig().getServletContext().getRequestDispatcher("/HistoryUser.jsp");
+			try {
+				reqDispatcher.forward(request,response);
+			} catch (ServletException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+		}
 		
 	}
 	
@@ -432,18 +498,76 @@ public class FOS extends HttpServlet {
                             e.getMessage() ) ;
 		        	if(ErrorState.equals("22001")){response.sendRedirect("/FOS/Home.jsp?RegistrationError=Username should not exceed 5 digits.");}
 		        	if(ErrorState.equals("23505")){response.sendRedirect("/FOS/Home.jsp?RegistrationError=Select another user Id.");}
-		        	if(ErrorState.equals("23514")){response.sendRedirect("/FOS/Home.jsp?RegistrationError=Password length must be>=4 digits.");}
+		        	if(ErrorState.equals("23514")){response.sendRedirect("/FOS/Home.jsp?RegistrationError=Password length must be>=6 digits.");}
 		        }
 		        }
 			}
 		}
 		
+		if(num.equals("5")){
+			String Name = request.getParameter("Name");
+			String Password = request.getParameter("Password");
+			String Confirmation = request.getParameter("Confirmation");
+			String Address = request.getParameter("Address");
+			String UserID = request.getParameter("uid");
+			boolean sentConf=false;
+			
+			if(!Password.equals(Confirmation)){
+				response.sendRedirect("/FOS/EditDetails.jsp?ErrorMsg=Passwords don't match&uid="+UserID);
+				sentConf=true;
+			}
+			
+			if(!sentConf){
+			if(Password!=""){
+				String qtemp = "update users set password = '" + Password + "' where uid = '"+UserID+"'";
+				try {
+					st.executeUpdate(qtemp);
+				} catch (SQLException e) {
+					String ErrorState=e.getSQLState();
+		        	System.out.println("Caught SQLException " + e.getErrorCode() + "/" + e.getSQLState() + " " +   
+                            e.getMessage() ) ;
+		        	if(ErrorState.equals("23514")){response.sendRedirect("/FOS/EditDetails.jsp?ErrorMsg=Passwords length must be > 6&uid="+UserID);}
+		        	sentConf=true;
+				}
+			}
+			}
+			
+			if(Name!=""){
+				String qtemp = "update users set name = '" + Name + "' where uid = '"+UserID+"'";
+				try {
+					st.executeUpdate(qtemp);
+				} catch (SQLException e) {
+					String ErrorState=e.getSQLState();
+		        	System.out.println("Caught SQLException " + e.getErrorCode() + "/" + e.getSQLState() + " " +   
+                            e.getMessage() ) ;
+		        	if(ErrorState.equals("23514")){response.sendRedirect("/FOS/EditDetails.jsp?ErrorMsg=Here Error&uid="+UserID);}
+		        	sentConf=true;
+
+				}
+			}
+			
+			if(Address!=""){
+				String qtemp = "update users set address = '" + Address + "' where uid = '"+UserID+"'";
+				try {
+					st.executeUpdate(qtemp);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+			if(!sentConf){
+				toUser(UserID, request, response, null);	
+			}
+			
+		}
+		
 		if(num.equals("6"))
 		{
-			String UserData = request.getParameter("UserData");
-			System.out.println("dinesh"+UserData);
-			String Amount = request.getParameter("Amount");
-			
+			String UserID = request.getParameter("UserID");
+			String UserData=getUserData(UserID);
+			String[] parts=UserData.split("@");
+			String Amount = request.getParameter("Amount");			
 			String Passkey = request.getParameter("Passkey");
 			boolean nullvals = false;
 			boolean auth = false;
@@ -454,24 +578,24 @@ public class FOS extends HttpServlet {
 			}
 			
 			else{
-				uid = UserData.split("@")[0];
-				System.out.println("dinesh"+UserData+"amount"+Amount+"Passkey"+Passkey);
+				uid = UserID;
+				//System.out.println("dinesh"+UserData+"amount"+Amount+"Passkey"+Passkey);
 				ammo = Integer.parseInt(Amount);
 				auth = AuthenticateUser(uid,Passkey,"User");
 			}
 			if(auth&&(!(nullvals))){
-				ammo = ammo + Integer.parseInt(UserData.split("@")[2]);
+				ammo = ammo + Integer.parseInt(parts[4]);
 				String qtemp = "update users set wallet = " + ammo + " where uid = '"+uid+"'";
+				boolean sent=false;
 				try {
 					st.executeQuery(qtemp);
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				toUser(uid,request,response,null);
 			}
 			else{
-				response.sendRedirect("/FOS/Wallet.jsp?UserData="+UserData);
+				response.sendRedirect("/FOS/Wallet.jsp?ErrorMsg=Incorrect Credentials&UserData="+parts[0]+"@"+parts[1]+"@"+parts[4]);
 			}
 		}
 		
@@ -509,6 +633,7 @@ public class FOS extends HttpServlet {
 		    }
 	        }
 	        
+	        /*
 	        String sqltemp="UPDATE seller set wallet=wallet+"+amount+" where sid='"+sid+"'";
 	        try {
 				st.executeUpdate(sqltemp);
@@ -516,8 +641,9 @@ public class FOS extends HttpServlet {
 				e.printStackTrace();
 		        System.out.println("********************3**************");
 			}
+			*/
 	        
-	        
+	        String sqltemp="";
 	        for(int i=0;i<values.length;i++){
 	        	sqltemp="update orders set DeliveryStatus='Delivered' where oid='"+values[i]+"'";
 				try {
@@ -550,6 +676,7 @@ public class FOS extends HttpServlet {
 					e.printStackTrace();
 				}
 	        	
+	        	/*
 	        	sqltemp="UPDATE users set wallet=wallet-"+cost+" where uid='"+uid+"'";
 	        	try {
 					st.executeUpdate(sqltemp);
@@ -557,6 +684,7 @@ public class FOS extends HttpServlet {
 					System.out.println("****************6************");
 					e.printStackTrace();
 				}
+	        	*/
 	        }
 	        }
 	        toSeller(sid,request,response);
@@ -982,7 +1110,7 @@ public class FOS extends HttpServlet {
 			
 			
 			
-			System.out.println("to user");
+			System.out.println("to user done");
 		}
 		
 		void toSeller(String UserName, HttpServletRequest request, HttpServletResponse response){
