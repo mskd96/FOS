@@ -8,13 +8,23 @@
 </head>
 <body>
 <% String sid = request.getParameter("sid") ;%>
-<h2>Insert values to be added</h2>
+<h2>Apparently, there is no item in database with that name. Add some more information.</h2>
 
 <form action="FOS" method="post">
 ItemName <input type="text" name="ItemName" size="20px" > <br>
 Cost <input type="text" name="Cost" size="20px" > <br>
-Delivery Time (Mins) <input type="text" name="Minutes" size="20px" > <br>
-<input type="hidden" name="from" value = "12">
+Minutes <input type="text" name="Minutes" size="20px" > <br>
+Veg/Non-Veg- 
+<input type="radio" name="IsVeg" value="Vegetarian">Vegetarian
+<input type="radio" name="IsVeg" value="Non-Vegetarian">Non-Vegetarian
+
+<br>
+Cuisine- 
+<input type="radio" name="Cuisine" value="North-Indian">North-Indian
+<input type="radio" name="Cuisine" value="Chinese">Chinese
+<input type="radio" name="Cuisine" value="South-Indian">South-Indian
+<br>
+<input type="hidden" name="from" value = "14">
 <input type="hidden" name="sid" value=<%out.println(sid); %>>
 <input type="submit" name="Add" value="Add">
 </form>

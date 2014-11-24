@@ -342,27 +342,110 @@ public class FOS extends HttpServlet {
 		
 		if(num.equals("12")){
 			String sid=request.getParameter("sid");
-			String ItemID=request.getParameter("ItemId");
+			String ItemName=request.getParameter("ItemName");
 			String Cost=request.getParameter("Cost");
-			String Hours=request.getParameter("Hours");
 			String Minutes=request.getParameter("Minutes");
-			String Seconds=request.getParameter("Seconds");
-			String Interval=Hours+":"+Minutes+":"+Seconds;
-			String sql="insert into menu values(?,?,?,?)";
-	        try{
-	        	PreparedStatement pStmt=conn1.prepareStatement(sql);
+			String sql="select iid from item where name='"+ItemName+"'";
+	        ResultSet rs;
+	        String iid="";
+			try {
+				rs=st.executeQuery(sql);
+				while(rs.next()){
+					iid=rs.getString(1);
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if(iid.equals("")){
+				response.sendRedirect("/FOS/SomeMoreInfo.jsp?sid="+sid);	
+			}
+			else{
+			try{
+				
+				String sql2="insert into menu values(?,?,?,?)";
+	        	PreparedStatement pStmt=conn1.prepareStatement(sql2);
 	        	pStmt.setString(1,sid);
-	        	pStmt.setString(2,ItemID);
-	        	pStmt.setString(3,Cost);
-	        	pStmt.setString(4,Interval);
+	        	pStmt.setString(2,iid);
+	        	int costInt=Integer.parseInt(Cost);
+	        	pStmt.setInt(3,costInt);
+	        	pStmt.setString(4,Minutes);
+	        	System.out.println("Sid is "+sid+" iid is "+iid+" cost is "+Cost+"");
 	        	pStmt.executeUpdate();
 	        	response.sendRedirect("/FOS/Temp.jsp?name=Successful");
 	        }
 	        catch(SQLException e){
+	        	System.out.println("<<<<<<<<<<<<,ERROR IS HERE>>>>>>>>>>>");
+	        	e.printStackTrace();
 	        	response.sendRedirect("/FOS/Temp.jsp?name=Dobbindhi"); // Should Wirte code for different kinds of errors
 	        }
-
+			}
 		}
+		
+		else if(num.equals("14")){
+			String sql1="select count(*) from item";
+			String count="";
+			ResultSet rs1;
+			try {
+				rs1=st.executeQuery(sql1);
+				while(rs1.next()){
+					count=rs1.getString(1);
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			int iidnew=Integer.parseInt(count);
+			iidnew++;
+			String iidNewString=Integer.toString(iidnew);
+			String sid=request.getParameter("sid");
+			String itemName=request.getParameter("ItemName");
+			String isVeg=request.getParameter("IsVeg");
+			if(isVeg.equals("Vegetarian")){isVeg="1";}
+			else{isVeg="2";}
+			int isVegInt=Integer.parseInt(isVeg);
+			String cuisine=request.getParameter("Cuisine");
+			if(cuisine.equals("North-Indian")){cuisine="1";}
+			else if(cuisine.equals("Chinese")){cuisine="2";}
+			else if(cuisine.equals("South-Indian")){cuisine="3";}
+			int CuisineInt=Integer.parseInt(cuisine);
+			String cost=request.getParameter("Cost");
+			int costInt=Integer.parseInt(cost);
+			String exptime=request.getParameter("Minutes");
+			String sql="insert into item values(?,?,?,?)";
+
+			try {
+	        	PreparedStatement pStmt=conn1.prepareStatement(sql);
+				pStmt = conn1.prepareStatement(sql);
+	        	pStmt.setString(1,iidNewString);
+	        	pStmt.setString(2,itemName);
+	        	pStmt.setInt(3,isVegInt);
+	        	pStmt.setInt(4,CuisineInt);
+	        	pStmt.executeUpdate();
+	        	
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			sql="insert into menu values (?,?,?,?)";
+			try {
+	        	PreparedStatement pStmt=conn1.prepareStatement(sql);
+				pStmt = conn1.prepareStatement(sql);
+	        	pStmt.setString(1,sid);
+	        	pStmt.setString(2,iidNewString);
+	        	pStmt.setInt(3,costInt);
+	        	pStmt.setString(4,exptime);
+	        	
+	        	pStmt.executeUpdate();
+	        	
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			toSeller(sid,request,response);
+		}
+		
 		
 		else if(num.equals("3"))
 		{
@@ -726,7 +809,6 @@ public class FOS extends HttpServlet {
 			request.setAttribute("MyData", SellerData);
 			request.setAttribute("OrderData", OrderData);
 			request.setAttribute("SIDPassing",PersonalData);
-			System.out.println("Error AAGAYAAAA");
 			RequestDispatcher reqDispatcher = getServletConfig().getServletContext().getRequestDispatcher("/Seller.jsp");
 			try {
 				reqDispatcher.forward(request,response);
