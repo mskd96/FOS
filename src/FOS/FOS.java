@@ -438,6 +438,11 @@ public class FOS extends HttpServlet {
 			
 		}
 		
+		if(num.equals("88")){
+			String sid=request.getParameter("sid");
+			toSeller(sid,request,response);
+		}
+		
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

@@ -40,6 +40,11 @@ for(String line: SingleLine){
 }
 %>
 </table>
+<br>
+<br>
+<br>
+<%String output="FOS?from=88&sid="+sid;%>
+<a href=<%out.println(output); %>><h3>Home</h3></a>
 </div>
 </body>
 </html>

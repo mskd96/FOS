@@ -9,12 +9,26 @@
 <body>
 
 <form action="FOS" method=post>
-
-<table CELLPADDING="3" CELLSPACING="1">
-<%String S=request.getAttribute("MyMenu").toString(); 
+<div style="width:50%; margin:0 auto;text-align:center;">
+<h2> My Menu </h2>
+<%
+String S=request.getAttribute("MyMenu").toString(); 
 String sid=request.getAttribute("MySID").toString();
 String boolCheck="0";
 String InsertString="/FOS/InsertItems.jsp?sid="+sid;
+%>
+<h4> If you want to insert new items, <a href=<%out.println(InsertString); %>> Click here</a> </h4>
+<h4> If you want to delete items, select checkboxes and click delete items</h4>
+<table CELLPADDING="3" CELLSPACING="1" border="1" style="border-collapse:collapse;">
+<tr>
+<td> Checkbox </td>
+<td> Item Name </td>
+<td> Veg/Non-Veg </td>
+<td> Cuisine </td>
+<td> Cost </td>
+<td> Approx Delivery Time </td>
+</tr>
+<%
 String[] SingleLine=S.split("//");
 for(String line: SingleLine){
 	String[] parts=line.split("@");  //Parts[5] is iid
@@ -35,10 +49,15 @@ for(String line: SingleLine){
 %>
 
 </table>
+<br>
+<br>
 <input type="hidden" name="boolCheck" value=<%out.println(boolCheck); %>>
 <input type="hidden" name="SidPassing" value = <%out.println(sid);%>>
 <input type="submit" name="submitvalue" value="Delete Items">
 <input type="hidden" name="from" value = "9">
-<a href=<%out.println(InsertString); %>> Click here to Insert Items</a>
+<br>
+<br>
+
+ <div style="width:50%; margin:0 auto;text-align:center;">
 </body>
 </html>
