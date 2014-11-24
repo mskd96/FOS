@@ -584,7 +584,6 @@ public class FOS extends HttpServlet {
 			
 			else{
 				uid = UserID;
-				//System.out.println("dinesh"+UserData+"amount"+Amount+"Passkey"+Passkey);
 				ammo = Integer.parseInt(Amount);
 				auth = AuthenticateUser(uid,Passkey,"User");
 			}
