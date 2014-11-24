@@ -10,6 +10,7 @@ import java.util.Properties;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
@@ -23,6 +24,11 @@ import javax.servlet.http.HttpSession;
 
 import java.io.PrintWriter;
 import java.security.Principal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.io.*; 
+import java.net.*; 
+
 
 /**
  * Servlet implementation class FOS
@@ -113,6 +119,7 @@ public class FOS extends HttpServlet {
 			}
 			
 		}
+		
 		if(num.equals("4"))
 		{
 			String uid = request.getParameter("uid");
@@ -189,6 +196,182 @@ public class FOS extends HttpServlet {
 			
 			
 		}
+		
+		if(num.equals("13"))
+		{
+			String UserID = request.getParameter("UserData");
+			String SellerID = request.getParameter("SellerData");
+			String ItemData = request.getParameter("ItemData");
+			if(ItemData == null){System.out.println("IS NULL");}
+			int amount = 0;
+			boolean ordered=false;
+			for(String s: ItemData.split("//"))
+			{
+				if(s.equals(""))continue;
+				ordered=true;
+				float c = Float.parseFloat(s.split("@")[1]);
+				int cost = (int) c;
+				c = Float.parseFloat(s.split("@")[2]);
+				int quantity = (int) c;
+				amount += quantity*cost;
+			}
+			System.out.println("Amount is "+amount);
+			System.out.println("User ID is "+UserID);
+			System.out.println("Seller data is "+SellerID);
+			String UserData=getUserData(UserID);
+			int walletAmount=Integer.parseInt(UserData.split("@")[4]);
+			
+			if(amount>walletAmount){
+				response.sendRedirect("/FOS/Temp.jsp?name=notSufficientAmount");
+			}
+			
+			else if(ordered){
+				String sql="select count(*) from orders";
+				int OrderId=0;
+				String OrderIdString="";
+				ResultSet rs;
+				try {
+					rs=st.executeQuery(sql);
+					while(rs.next()){
+						OrderIdString=rs.getString(1);
+					}
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				OrderId=Integer.parseInt(OrderIdString);
+				OrderId++;
+				OrderIdString=Integer.toString(OrderId);
+				Date dnow=new Date();
+				SimpleDateFormat dateFormat = new SimpleDateFormat("y-M-d HH:mm:ss");
+				String DateFinal=dateFormat.format(dnow);
+				
+				sql="insert into orders values(?,CAST (? as TIMESTAMP),?)";
+				PreparedStatement pStmt,pStmt2,pStmt3,pStmt4;
+				try {
+					pStmt = conn1.prepareStatement(sql);
+		        	pStmt.setString(1,OrderIdString);
+		        	pStmt.setString(2,DateFinal);
+		        	String NotDelivered="NotDelivered";
+		        	pStmt.setString(3,NotDelivered);
+		        	System.out.println(pStmt);
+		        	pStmt.executeUpdate();
+		        	
+		        	sql="insert into sellerorder values(?,?)";
+		        	pStmt2 = conn1.prepareStatement(sql);
+		        	pStmt2.setString(1,SellerID);
+		        	pStmt2.setString(2,OrderIdString);
+		        	pStmt2.executeUpdate();
+		        	
+		        	sql="insert into userorder values(?,?)";
+		        	pStmt3 = conn1.prepareStatement(sql);
+		        	pStmt3.setString(1,UserID);
+		        	pStmt3.setString(2,OrderIdString);
+		        	pStmt3.executeUpdate();	
+
+					for(String s: ItemData.split("//")){
+						if(s.equals(""))continue;
+						String[] ArrayItem=s.split("@");
+						sql="insert into itemorder values(?,?,?)";
+						pStmt4 = conn1.prepareStatement(sql);
+			        	pStmt4.setString(1,ArrayItem[0]);
+			        	pStmt4.setString(2,OrderIdString);
+			        	pStmt4.setString(3,ArrayItem[2]);
+			        	pStmt4.executeUpdate();
+					}
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}		// Should insert for each item
+				response.sendRedirect("/FOS/Temp.jsp?name=OderPlaced");
+			}
+			else{
+				toUser(UserID,request,response,null);
+			}
+			
+		}
+		
+		if(num.equals("25"))
+		{
+			String UserId = request.getParameter("UserId");
+			String SellerId = request.getParameter("SellerId");
+			System.out.println("User Id : "+UserId);
+			System.out.println("Seller Id : "+SellerId);
+			String All = request.getQueryString();
+			String SelectedItems[] = request.getParameterValues("itemid");
+			
+			//String Quantity[] = request.getParameterValues("Quantity");
+			//System.out.println(All);
+			int index = 0;
+			int i=0;
+			ArrayList Quantity = new ArrayList();
+			while(index<All.length())
+			{
+				int temp = All.indexOf("itemid",index);
+				if(temp==-1) break;
+				int quantity = Character.getNumericValue(All.charAt(temp-2));
+				System.out.println("quantity " + quantity);
+				Quantity.add(quantity);
+				index = temp + 6;
+				//int iid = Character.getNumericValue(All.charAt(temp+7));
+				String iid= SelectedItems[i];
+				System.out.println("item id " + iid);
+				//System.out.println("index : "+index);
+				i++;
+			}
+			String qUser = "select * from users where uid = '" + UserId + "'";
+			String qSeller = "select * from seller where sid = '" + SellerId + "'";
+			ResultSet rs;
+			String UserData = "";
+			String SellerData = "";
+			String ItemData = "";
+			try {
+				rs = st.executeQuery(qUser);
+				rs.next();
+				UserData = rs.getString("uid") + "@" + rs.getString("name") + "@" + rs.getString("wallet");
+				rs= st.executeQuery(qSeller);
+				rs.next();
+				SellerData = rs.getString(1) + "@" + rs.getString(2) + "@" + rs.getString(3);
+				//Not adding cuisine details to seller data which was there in the original call
+				//System.out.println(All);
+				for(int j=0; j<i; j++)
+				{
+					if(Quantity.get(j).toString().equals("0")) continue;
+					String ItemId = SelectedItems[j];
+					//System.out.println(Quantity.get(j).toString());
+					String q1 = "Select * from menu natural join item where sid = '" + SellerId + "' and "
+							+ "iid = '" + ItemId + "'";
+					rs = st.executeQuery(q1);
+					rs.next();
+					ItemData += rs.getString(1) + "@" + rs.getString(2) + "@"  + rs.getString(3) + "@" +
+							rs.getString(4) + "@" + rs.getString(5) + "@"  + rs.getString(6) + "@" +
+							rs.getString(7) + "@" + Quantity.get(j).toString();
+					ItemData += "//";
+				}
+				//System.out.println(UserData);
+				//System.out.println(SellerData);
+				//System.out.println(ItemData);
+				request.setAttribute("ItemData",ItemData);
+				request.setAttribute("SellerData",SellerData);
+				request.setAttribute("UserData",UserData);
+				RequestDispatcher reqDispatcher = getServletConfig().getServletContext().
+						getRequestDispatcher("/OrderConf.jsp");
+				try {
+					reqDispatcher.forward(request,response);
+				} catch (ServletException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -207,7 +390,7 @@ public class FOS extends HttpServlet {
 		        System.out.println(retVal);
 		        System.out.println("SOR IS "+sor);
 		        if((retVal)&&(sor.equals("User"))){System.out.println("???????????????????????");toUser(UserId,request,response,null);}
-		        if((retVal)&&(sor.equals("Seller"))){toSeller(UserId,request,response);}
+		        else if((retVal)&&(sor.equals("Seller"))){toSeller(UserId,request,response);}
 		        else {response.sendRedirect("/FOS/Home.jsp?ErrorMsg=Username or Password is invalid!!");}
 		    }
 			else if(lor.equals("signup")){
@@ -229,14 +412,15 @@ public class FOS extends HttpServlet {
 		        else{
 		        String sor= request.getParameter("SellerOrUser");
 		        String sql="";
-		        if(sor.equals("Seller")){sql="insert into seller values(?,?,?,?)";}
-		        else if(sor.equals("User")){sql="insert into users values(?,?,?,?)";}
+		        if(sor.equals("Seller")){sql="insert into seller values(?,?,?,?,?)";}
+		        else if(sor.equals("User")){sql="insert into users values(?,?,?,?,?)";}
 		        try{
 		        	PreparedStatement pStmt=conn1.prepareStatement(sql);
 		        	pStmt.setString(1,UserId);
 		        	pStmt.setString(2,Name);
 		        	pStmt.setString(3,Address);
 		        	pStmt.setString(4,PassWd);
+		        	pStmt.setInt(5,0);
 		        	pStmt.executeUpdate();
 		        	if(sor.equals("Seller")){toSeller(UserId,request,response);}
 		        	else{toUser(UserId,request,response,null);}
@@ -251,6 +435,43 @@ public class FOS extends HttpServlet {
 		        	if(ErrorState.equals("23514")){response.sendRedirect("/FOS/Home.jsp?RegistrationError=Password length must be>=4 digits.");}
 		        }
 		        }
+			}
+		}
+		
+		if(num.equals("6"))
+		{
+			String UserData = request.getParameter("UserData");
+			System.out.println("dinesh"+UserData);
+			String Amount = request.getParameter("Amount");
+			
+			String Passkey = request.getParameter("Passkey");
+			boolean nullvals = false;
+			boolean auth = false;
+			int ammo = 0;
+			String uid="";
+			if(Amount.equals("") || Passkey.equals("")){
+				nullvals = true;
+			}
+			
+			else{
+				uid = UserData.split("@")[0];
+				System.out.println("dinesh"+UserData+"amount"+Amount+"Passkey"+Passkey);
+				ammo = Integer.parseInt(Amount);
+				auth = AuthenticateUser(uid,Passkey,"User");
+			}
+			if(auth&&(!(nullvals))){
+				ammo = ammo + Integer.parseInt(UserData.split("@")[2]);
+				String qtemp = "update users set wallet = " + ammo + " where uid = '"+uid+"'";
+				try {
+					st.executeQuery(qtemp);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				toUser(uid,request,response,null);
+			}
+			else{
+				response.sendRedirect("/FOS/Wallet.jsp?UserData="+UserData);
 			}
 		}
 		
@@ -328,6 +549,7 @@ public class FOS extends HttpServlet {
 					System.out.println("****************5************");
 					e.printStackTrace();
 				}
+	        	
 	        	sqltemp="UPDATE users set wallet=wallet-"+cost+" where uid='"+uid+"'";
 	        	try {
 					st.executeUpdate(sqltemp);
@@ -820,4 +1042,55 @@ public class FOS extends HttpServlet {
 				//e.printStackTrace();
 			}
 		}
-	}
+		
+		String getUserData(String uid){
+			String sql="select * from users where uid='"+uid+"'";
+			ResultSet rs;
+			String out="";
+			try {
+				rs=st.executeQuery(sql);
+				while(rs.next()){
+					out=rs.getString(1)+"@"+rs.getString(2)+"@"+rs.getString(3)+"@"+rs.getString(4)+"@"+rs.getString(5);
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return out;
+			
+		}
+		
+		String getSellerData(String sid){
+			String sql="select * from user where sid='"+sid+"'";
+			ResultSet rs;
+			String out="";
+			try {
+				rs=st.executeQuery(sql);
+				while(rs.next()){
+					out=rs.getString(1)+"@"+rs.getString(2)+"@"+rs.getString(3)+"@"+rs.getString(4)+"@"+rs.getString(5);
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return out;			
+		}
+		
+		String getItemData(String iid){
+			String sql="select * from item where iid='"+iid+"'";
+			ResultSet rs;
+			String out="";
+			try {
+				rs=st.executeQuery(sql);
+				while(rs.next()){
+					out=rs.getString(1)+"@"+rs.getString(2)+"@"+rs.getString(3)+"@"+rs.getString(4);
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return out;			
+		}
+		
+		
+}
