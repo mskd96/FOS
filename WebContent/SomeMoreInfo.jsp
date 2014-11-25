@@ -4,30 +4,36 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+<link rel="stylesheet" type="text/css" href="EditDetails.css">
+<title>Some More Info</title>
 </head>
 <body>
 <% String sid = request.getParameter("sid") ;%>
-<h2>Apparently, there is no item in database with that name. Add some more information.</h2>
-
-<form action="FOS" method="post">
-ItemName <input type="text" name="ItemName" size="20px" > <br>
-Cost <input type="text" name="Cost" size="20px" > <br>
-Minutes <input type="text" name="Minutes" size="20px" > <br>
-Veg/Non-Veg- 
-<input type="radio" name="IsVeg" value="Vegetarian">Vegetarian
-<input type="radio" name="IsVeg" value="Non-Vegetarian">Non-Vegetarian
 
 <br>
-Cuisine- 
-<input type="radio" name="Cuisine" value="North-Indian">North-Indian
-<input type="radio" name="Cuisine" value="Chinese">Chinese
-<input type="radio" name="Cuisine" value="South-Indian">South-Indian
+<br>
+<center>
+<h2>Apparently, there is no item in database with that name. Add some more information.</h2>
+</center>
+
+<form id = "msform" action="FOS" method="post">
+<fieldset>
+<input type="text" name="ItemName" placeholder="ItemName" class="name" size="20px" > <br>
+<input type="text" name="Cost" placeholder="Cost" class="name" size="20px" > <br>
+<input type="text" name="Minutes" placeholder="Minutes" class="name" size="20px" > 
+Vegetarian<input type="radio" name="IsVeg" value="Vegetarian">
+Non-Vegetarian<input type="radio" name="IsVeg" value="Non-Vegetarian">
+
+
+North-Indian<input type="radio" name="Cuisine" value="North-Indian">
+Chinese<input type="radio" name="Cuisine" value="Chinese">
+South-Indian<input type="radio" name="Cuisine" value="South-Indian">
 <br>
 <input type="hidden" name="from" value = "14">
 <input type="hidden" name="sid" value=<%out.println(sid); %>>
-<input type="submit" name="Add" value="Add">
+<input type="submit" name="Add" value="Add" class="action-button">
 </form>
-
+<%String output="FOS?from=88&sid="+sid;%>
+<a href=<%out.println(output); %>><h3>Home</h3></a>
 </body>
 </html>

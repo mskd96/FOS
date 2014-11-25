@@ -4,13 +4,15 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="EditDetails.css">
 <title>Insert title here</title>
 </head>
 <body>
 
- <div style="width:50%; margin:0 auto;text-align:center;">
+<center style="margin-top:5%;">
 <h2>History of all deliveries</h2>
-<table  CELLPADDING="3" CELLSPACING="1" border="1">
+<br>
+<table  CELLPADDING="3" CELLSPACING="1" border="1" style="text-align:center;">
 <tr>
 <td> Customer Name </td>
 <td> Item Name </td>
@@ -45,6 +47,6 @@ for(String line: SingleLine){
 <br>
 <%String output="FOS?from=88&sid="+sid;%>
 <a href=<%out.println(output); %>><h3>Home</h3></a>
-</div>
+</center>
 </body>
 </html>

@@ -4,6 +4,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="EditDetails.css">
 <title>Insert title here</title>
 </head>
 <body>
@@ -11,19 +12,20 @@
 <%String UserData = request.getParameter("UserData").toString();
 String ArrayUser[] = UserData.split("@");%>
 
-
+<center>
 <h1>welcome <%out.println(ArrayUser[1]); %></h1>
 <h2>your wallet contains <%out.println(ArrayUser[2]); %></h2>
 
+</center>
 
 
-
-<FORM action="FOS" method = "post">
+<FORM id = "msform" action="FOS" method = "post">
+<fieldset>
 <input type = "hidden" name = "UserID" value =<%out.println(ArrayUser[0]); %> >
 <input type = "hidden" name = "from" value = "6">
-enter amount:<input type = "text" name = "Amount"></br>
-enter password:<input type = "password" name = "Passkey"></br>
-<input type="submit" name="submitvalue" value="Auth">
+<input type = "text" name = "Amount" placeholder="Amount" class="name"></br>
+<input type = "password" name = "Passkey" placeholder="Password" class="name"></br>
+<input type="submit" name="submitvalue" value="Auth" class="action-button"><br>
 </FORM>
 
 <% 
@@ -31,7 +33,8 @@ String s= request.getParameter("ErrorMsg");
 if(s != null) out.println(s);
 String output="FOS?from=36&uid="+ArrayUser[0];
 %>
+<br>
 <a href=<%out.println(output);%>>Home</a>
-
+</fieldset>
 </body>
 </html>

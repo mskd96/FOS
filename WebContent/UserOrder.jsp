@@ -4,6 +4,8 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="EditDetails.css">
+<link rel="stylesheet" type="text/css" href="Menu.css">
 <title>Order Page</title>
 </head>
 <body>
@@ -11,26 +13,28 @@
 <%String UserData = request.getAttribute("UserData").toString();
 String ArrayUser[] = UserData.split("@");%>
 
-<div style="width:100%;height = 50px;background:#F9EECF;border:1px dotted black;">
-<center>
-<a href="/FOS/Wallet.jsp?UserData=<%out.println(UserData); %>"><div style="width:20%;height = 50px;background:#F9EECF;border:1px dotted black;float:left;">wallet</div></a>
-<a href="editdetails"><div style="width:20%;height = 50px;background:#F9EECF;border:1px dotted black;float:left;">edit details</div></a>
-<a href="svag"><div style="width:20%;height = 50px;background:#F9EECF;border:1px dotted black;float:left;">history</div></a>
-<a href="Home.jsp"><div style="width:20%;height = 50px;background:#F9EECF;border:1px dotted black;float:left;">Logout</div></a>
-</center>
+<div class="menu3">
+    <a href="/FOS/Wallet.jsp?UserData=<%out.println(UserData); %>">Wallet</a>
+    <% String edit="/FOS/EditDetails.jsp?uid="+ArrayUser[0]; 
+String history="FOS?from=63&uid="+ArrayUser[0]; %>
+    <a href=<%out.println(edit); %>>Edit Details</a>
+    <a href=<%out.println(history); %>>History</a>
+    <a href="Home.jsp">Logout</a>
 </div>
-
-<h1>welcome <%out.println(ArrayUser[1]); %></h1>
-<h2>your wallet contains <%out.println(ArrayUser[2]); %></h2>
+<div class="menu3sub"> </div>
+<div style="float:left;margin-top:3%;margin-left:10%;">
+<h1>Welcome <%out.println(ArrayUser[1]); %></h1>
+<h2>Your wallet contains <%out.println(ArrayUser[2]); %></h2>
 <%
 String ItemData = request.getAttribute("ItemData").toString();
 String ItemDataArray[] = ItemData.split("//");
 String SellerData = request.getAttribute("SellerData").toString();
 String SellerDataArray[] = SellerData.split("@");
 %>
-
-<div style="float:left">
-<h3>please select your cuisine and order</h3>
+</br>
+</br>
+</br>
+<h3>Please select your cuisine and order</h3>
 <form action="FOS" method ="post">
   <input type="checkbox" name="1" value="abc"> North Indian<br>
   <input type="checkbox" name="2" value="abc" > Chinese<br>
@@ -40,16 +44,16 @@ String SellerDataArray[] = SellerData.split("@");
   <input type = "hidden" name = "UserId" value = <% out.println(ArrayUser[0]); %>>
   <input type = "hidden" name = "SellerId" value = <% out.println(SellerDataArray[0]); %>>
   <input type="hidden" name="from" value = "4">
-  <input type="submit" value="Submit">
+  <input type="submit" value="Submit" class="action1">
 </form>
 
 <a href = "/FOS/FOS?from=4&uid=<%out.println(ArrayUser[0]); %>"> Back to your Homepage</a>
 </div>
 
 
-<div style="float:right;padding-right:10%;">
+<div style="float:right;padding-right:10%;margin-top:3%;margin-bottom:5%;">
 <h3> Items of <%out.println(SellerDataArray[1]); %></h3>
-<div style="width:100%;background:#F9EECF;border:1px dotted black;text-align:center;">
+<div style="width:100%;border:1px dotted black;text-align:center;">
 <form action="FOS">
 <input type="hidden" name="from" value = "25">
 <input type = "hidden" name = "UserId" value = <% out.println(ArrayUser[0]); %>>
@@ -74,8 +78,14 @@ for(String s : ItemDataArray)
         <TD><%=ItemArray[4] %></TD>
         <TD><%=ItemArray[2] %></TD>
         <TD><%=ItemArray[3] %></TD>
-        <TD><%=ItemArray[5] %></TD>
-        <TD><%=ItemArray[6] %></TD>
+        <TD>
+        <%if(ItemArray[5].equals("1")) out.println("Veg");
+        else out.println("Non-Veg");
+        %></TD>
+        <TD>
+        <%if(ItemArray[6].equals("1")) out.println("North Indian");
+        else if(ItemArray[6].equals("2")) out.println("Chinese");
+        else out.println("South Indian");%></TD>
         <TD><select name="Quantity">
   <option value="0">0</option>      
   <option value="1">1</option>
@@ -91,7 +101,7 @@ for(String s : ItemDataArray)
 
 <%}%>
 </TABLE>
-<input type="submit" name="submitvalue" value="Submit">
+<input type="submit" name="submitvalue" value="Submit" class="action1">
 
 </form>
 </div>

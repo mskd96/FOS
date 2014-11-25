@@ -4,12 +4,15 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="EditDetails.css">
 <title>Seller Menu</title>
 </head>
 <body>
 
 <form action="FOS" method=post>
-<div style="width:50%; margin:0 auto;text-align:center;">
+
+<!--  <div style="width:50%; margin:5% auto;text-align:center;">  -->
+<center style="margin-top:5%;">
 <h2> My Menu </h2>
 <%
 String S=request.getAttribute("MyMenu").toString(); 
@@ -17,9 +20,10 @@ String sid=request.getAttribute("MySID").toString();
 String boolCheck="0";
 String InsertString="/FOS/InsertItems.jsp?sid="+sid;
 %>
-<h4> If you want to insert new items, <a href=<%out.println(InsertString); %>> Click here</a> </h4>
-<h4> If you want to delete items, select checkboxes and click delete items</h4>
-<table CELLPADDING="3" CELLSPACING="1" border="1" style="border-collapse:collapse;">
+<br>
+<h4> If you want to insert new items, <a href=<%out.println(InsertString); %>> Click here</a> </h4> 
+<h4> If you want to delete items, select checkboxes and click delete items</h4> <br>
+<table CELLPADDING="3" CELLSPACING="1" border="1" style="text-align:center;">
 <tr>
 <td> Checkbox </td>
 <td> Item Name </td>
@@ -53,11 +57,14 @@ for(String line: SingleLine){
 <br>
 <input type="hidden" name="boolCheck" value=<%out.println(boolCheck); %>>
 <input type="hidden" name="SidPassing" value = <%out.println(sid);%>>
-<input type="submit" name="submitvalue" value="Delete Items">
+<input type="submit" name="submitvalue" value="Delete Items" class="action">
 <input type="hidden" name="from" value = "9">
 <br>
 <br>
+<%String output="FOS?from=88&sid="+sid;%>
+<a href=<%out.println(output); %>><h3>Home</h3></a>
 
- <div style="width:50%; margin:0 auto;text-align:center;">
+</center>
+ <!--  <div style="width:50%; margin:5% auto;text-align:center;"> -->
 </body>
 </html>

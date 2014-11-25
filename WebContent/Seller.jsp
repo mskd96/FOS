@@ -4,7 +4,9 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+<link rel="stylesheet" type="text/css" href="EditDetails.css">
+<link rel="stylesheet" type="text/css" href="Menu.css">
+<title>Seller's Home</title>
 </head>
 <body>
 
@@ -24,27 +26,37 @@ String MenuRef="/FOS/FOS?name=Menu&from=8&sid="+sid;
 String StatsRef="/FOS/FOS?name=Stats&from=8&sid="+sid;
 String HistoryRef="/FOS/FOS?name=History&from=8&sid="+sid;
 %>
-<div style="width:100%;height: 10%;background:#F9EECF;border:1px dotted black;float:left;">
-<center>
-<a href=<%out.println(MenuRef);%>><div style="width:25%;height: 10%;border:1px dotted black;float:left;">Edit Menu</div></a>
-<a href=<%out.println(StatsRef);%>><div style="width:25%;height: 10%;border:1px dotted black;float:left;">Stats</div></a>
-<a href=<%out.println(HistoryRef);%>><div style="width:25%;height: 10%;background:#F9EECF;border:1px dotted black;float:left;">History</div></a>
-<a href="/FOS/Home.jsp"><div style="width:25%;height: 10%;background:#F9EECF;border:1px dotted black;float:left;">Logout</div></a>
-</center>
+
+<div class="menu3">
+    <a href=<%out.println(MenuRef);%>>Edit Menu</a>
+    <a href=<%out.println(StatsRef);%>>Stats</a>
+    <a href=<%out.println(HistoryRef);%>>History</a>
+    <a href=/FOS/Home.jsp>Logout</a>
 </div>
+<div class="menu3sub"> </div>
+
 </br>
 </br>
 </br>
 
-<div style="width:40%; margin:0 auto;text-align:center;">
- <%out.println("Hello Mr. "+FinalArray[1]+"! You have "+FinalArray[2]+" in your Wallet."); %>
+
+
+<center>
+ <h3> <%out.println("Hello Mr. "+FinalArray[1]+"! You have "+FinalArray[2]+" in your Wallet."); %> </h3>
 <form action="FOS" method="post"> 
-
-
+<br>
+<table CELLPADDING="3" CELLSPACING="1" border="1" style="text-align:center;">
+<tr>
+<td> Checkbox </td>
+<td> User Name </td>
+<td> User Address </td>
+<td> Item Name </td>
+<td> Item Quantity </td>
+</tr>
 <%
 String boolCheck="0";
 for(String s : SingleOrderArray){
-	if(s.equals("")){System.out.println("*************HELLO BITCH***************");continue;}
+	if(s.equals("")){continue;}
 	System.out.println("*******!!!!!!!!!!!!!!!!!!*******");
 	String SingleOrderPartsArray[]=s.split("@");
 	String OutPut="";
@@ -56,19 +68,26 @@ for(String s : SingleOrderArray){
 	if(!(mid.equals(""))){
 	boolCheck="1";
 	%>
-	<input type="checkbox" name="OrderIds" value=<%out.println(mid);%> > <% out.println(OutPut); %> <br> 
+	<tr>
+	<td> <input type="checkbox" name="OrderIds" value=<%out.println(mid);%> > </td>
+	<td> <% out.println(SingleOrderPartsArray[0]); %> </td>
+	<td> <% out.println(SingleOrderPartsArray[1]); %> </td>
+	<td> <% out.println(SingleOrderPartsArray[2]); %> </td>
+	<td> <% out.println(SingleOrderPartsArray[3]); %> </td>
+	</tr>
 	<%
 	}
 }
 %>
-
+</table>
 <input type="hidden" name="boolCheck" value=<%out.println(boolCheck); %>>
 <input type="hidden" name="from" value = "8">
 <input type="hidden" name="SidPassing" value = <%out.println(sid);%>>
-<input type="submit" name="submitvalue" value="Make Delivered">
+<br>
+<input type="submit" name="submitvalue" value="Make Delivered" class="action">
 
 </form>
-   </div>
+ </center>
 <br>
 </body>
 </html>

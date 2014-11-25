@@ -4,30 +4,42 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>ABCD</title>
+<link rel="stylesheet" type="text/css" href="EditDetails.css">
+<link rel="stylesheet" type="text/css" href="Menu.css">
+<title>User Page</title>
 </head>
 <body>
 <%String DataUser = request.getAttribute("UserData").toString();
 String ArrayUser[] = DataUser.split("@");%>
-<div style="width:100%;height = 50px;background:#F9EECF;border:1px dotted black;">
-<center>
-<a href="/FOS/Wallet.jsp?UserData=<%out.println(DataUser); %>"><div style="width:20%;height = 50px;background:#F9EECF;border:1px dotted black;float:left;">wallet</div></a>
-<% String edit="/FOS/EditDetails.jsp?uid="+ArrayUser[0]; 
-String history="FOS?from=63&uid="+ArrayUser[0]; %>
 
-<a href=<%out.println(edit); %>><div style="width:20%;height = 50px;background:#F9EECF;border:1px dotted black;float:left;">Edit details</div></a>
-<a href=<%out.println(history); %>><div style="width:20%;height = 50px;background:#F9EECF;border:1px dotted black;float:left;">History</div></a>
-<a href="Home.jsp"><div style="width:20%;height = 50px;background:#F9EECF;border:1px dotted black;float:left;">Logout</div></a>
-</center>
+
+
+
+<div class="menu3">
+    <a href="/FOS/Wallet.jsp?UserData=<%out.println(DataUser); %>">Wallet</a>
+    <% String edit="/FOS/EditDetails.jsp?uid="+ArrayUser[0]; 
+String history="FOS?from=63&uid="+ArrayUser[0]; %>
+    <a href=<%out.println(edit); %>>Edit Details</a>
+    <a href=<%out.println(history); %>>History</a>
+    <a href="Home.jsp">Logout</a>
 </div>
-<h1>welcome <%out.println(ArrayUser[1]); %></h1>
-<h2>your wallet contains <%out.println(ArrayUser[2]); %></h2>
+<div class="menu3sub"> </div>
+
+
+
+
+<div style="float:left;margin-top:3%;margin-left:10%;">
+<h1>Welcome <%out.println(ArrayUser[1]); %></h1>
+<h2>Your wallet contains <%out.println(ArrayUser[2]); %></h2>
+</br>
+</br>
+</br>
 <%
 String DataSell = request.getAttribute("SellerData").toString();
 String ArraySell[] = DataSell.split("//");
 //out.println(s.split("//")[0] + " dinesh " + s.split(" ")[1]);
 %>
-<div style="float:left">
+
 <h3>please select your cuisine</h3>
 <form action="FOS" method ="post">
   <input type="checkbox" name="1" value="abc"> North Indian<br>
@@ -35,26 +47,33 @@ String ArraySell[] = DataSell.split("//");
   <input type="checkbox" name="3" value="abc"> South Indian<br>
   <input type="hidden" name="uid" value=<%out.println(ArrayUser[0]); %>> 
   <input type="hidden" name="from" value = "3">
-  <input type="submit" value="Submit">
+  <input type="submit" value="Submit" class="action1">
 </form>
 
 </div>
-<div style="float:right;padding-right:20%;">
+<div style="float:right;padding-right:10%;text-align:center;margin-top:3%;">
+<table  CELLPADDING="3" CELLSPACING="2" border="3">
+<tr>
+<td> Seller Name </td>
+<td> Seller Address </td>
+<td> Cuisine </td>
+</tr>
 <%
 for(String s : ArraySell)
 {
 	if(s.equals("")) continue;
 %>	
 
-<div style="width:100%;background:#F9EECF;border:1px dotted black;text-align:center;">
-<a href = "/FOS/FOS?from=3&UserData=<%out.println(DataUser); %>&SellerData=<%out.println(s); %>" >
-<%out.println(s.split("@")[1] + " " + s.split("@")[2] + " " + s.split("@")[3] ); %>
-</a>
-</div>
+<tr>
+<td><a href = "/FOS/FOS?from=3&UserData=<%out.println(DataUser); %>&SellerData=<%out.println(s); %>" >
+<%out.println(s.split("@")[1]);%></a></td>
+<td> <%out.println(s.split("@")[2]);%> </td>
+<td> <%out.println(s.split("@")[3] ); %> </td>
+</tr>
 
-	<br>
-	<br>
+</div>
 <%}%>
+</table>
 </div>
 </body>
 </html>

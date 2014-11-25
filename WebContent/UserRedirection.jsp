@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" type="text/css" href="EditDetails.css">
-<title>Redirect</title>
+<title>User Reditection</title>
 </head>
 <body>
 

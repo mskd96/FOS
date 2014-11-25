@@ -196,6 +196,51 @@ public class FOS extends HttpServlet {
 				
 			}
 			
+			if(name.equals("Stats")){
+				String sql="select item.name,sum(CAST(quantity as int)) from sellerorder natural join itemorder join item on item.iid=itemorder.iid where sid = '"+sid+"' group by item.iid,item.name order by Sum desc limit 10";
+				String sql2="select users.name,count(*) from sellerorder natural join userorder join users on users.uid=userorder.uid where sid='"+sid+"' group by users.uid order by count desc limit 10";
+				String sql3="select a.date,count(oid) from (select date(timestamp),oid from orders natural join sellerorder where sid='"+sid+"' order by timestamp) as a group by a.date order by a.date DESC limit 10";
+				String MostItems="",MostUsers="",DateWise="";
+				ResultSet rs1,rs2,rs3;
+				try{
+					rs1 = st.executeQuery(sql);
+      				 while(rs1.next()){
+						 	String ItemName = rs1.getString(1);
+						 	String Quantity = rs1.getString(2);
+						 	MostItems +=  ItemName + "@" + Quantity +"//";
+					}
+					rs1.close();
+					rs2 = st.executeQuery(sql2);
+     				 while(rs2.next()){
+						 	String UserName = rs2.getString(1);
+						 	String Orders = rs2.getString(2);
+						 	MostUsers +=  UserName + "@" + Orders +"//";
+					}
+					rs2.close();
+					rs3 = st.executeQuery(sql3);
+     				 while(rs3.next()){
+						 	String date = rs3.getString(1);
+						 	String Quantity = rs3.getString(2);
+						 	DateWise +=  date + "@" + Quantity +"//";
+					}
+					rs3.close();
+				}
+				catch(SQLException e){e.printStackTrace();}
+				request.setAttribute("MostItems", MostItems);
+				request.setAttribute("MostUsers", MostUsers);
+				request.setAttribute("DateWise", DateWise);
+				request.setAttribute("MySID", sid);
+				RequestDispatcher reqDispatcher = getServletConfig().getServletContext().getRequestDispatcher("/Stats.jsp");
+				try {
+					reqDispatcher.forward(request,response);
+				} catch (ServletException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				
+			}
+			
 			
 		}
 		
@@ -224,7 +269,7 @@ public class FOS extends HttpServlet {
 			int walletAmount=Integer.parseInt(UserData.split("@")[4]);
 			
 			if(amount>walletAmount){
-				response.sendRedirect("/FOS/Temp.jsp?name=notSufficientAmount");
+					response.sendRedirect("/FOS/UserRedirection.jsp?name=Not Sufficient Amount&uid="+UserID);
 			}
 			
 			else if(ordered){
@@ -697,8 +742,15 @@ public class FOS extends HttpServlet {
 		if(num.equals("12")){
 			String sid=request.getParameter("sid");
 			String ItemName=request.getParameter("ItemName");
+			ItemName=ItemName.toLowerCase();
+			System.out.println("ItemName is "+ItemName);
 			String Cost=request.getParameter("Cost");
 			String Minutes=request.getParameter("Minutes");
+			boolean sent=false;
+			if((ItemName.equals(""))||(Minutes.equals(""))||(Cost.equals(""))){
+				response.sendRedirect("/FOS/InsertItems.jsp?ErrorMsg=Values can't be empty&sid="+sid);
+				sent=true;
+			}
 			String sql="select iid from item where name='"+ItemName+"'";
 	        ResultSet rs;
 	        String iid="";
@@ -711,8 +763,9 @@ public class FOS extends HttpServlet {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			System.out.println("iid is "+iid);
 			if(iid.equals("")){
-				response.sendRedirect("/FOS/SomeMoreInfo.jsp?sid="+sid);	
+				if(!sent){response.sendRedirect("/FOS/SomeMoreInfo.jsp?sid="+sid);}	
 			}
 			else{
 			try{
@@ -726,13 +779,17 @@ public class FOS extends HttpServlet {
 	        	pStmt.setString(4,Minutes);
 	        	System.out.println("Sid is "+sid+" iid is "+iid+" cost is "+Cost+"");
 	        	pStmt.executeUpdate();
-	        	response.sendRedirect("/FOS/Temp.jsp?name=Successful");
+	        	toSeller(sid,request,response);
 	        }
 	        catch(SQLException e){
-	        	System.out.println("<<<<<<<<<<<<,ERROR IS HERE>>>>>>>>>>>");
-	        	e.printStackTrace();
-	        	response.sendRedirect("/FOS/Temp.jsp?name=Dobbindhi"); // Should Wirte code for different kinds of errors
-	        }
+	        	String ErrorState=e.getSQLState();
+	        	System.out.println("Caught SQLException " + e.getErrorCode() + "/" + e.getSQLState() + " " +   
+                        e.getMessage() ) ;
+	        	if(!sent){
+	        	if(ErrorState.equals("23505")){response.sendRedirect("/FOS/InsertItems.jsp?ErrorMsg=Item already present in your database&sid="+sid);}
+	        	else{response.sendRedirect("/FOS/Temp.jsp?name=SqlError, Restart server");} // Should Wirte code for different kinds of errors
+	        	}
+	        	}
 			}
 		}
 		
@@ -754,6 +811,7 @@ public class FOS extends HttpServlet {
 			String iidNewString=Integer.toString(iidnew);
 			String sid=request.getParameter("sid");
 			String itemName=request.getParameter("ItemName");
+			itemName=itemName.toLowerCase();
 			String isVeg=request.getParameter("IsVeg");
 			if(isVeg.equals("Vegetarian")){isVeg="1";}
 			else{isVeg="2";}

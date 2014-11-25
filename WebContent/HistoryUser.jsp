@@ -4,14 +4,14 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="EditDetails.css">
 <title>Insert title here</title>
 </head>
 <body>
 
-
- <div style="width:50%; margin:0 auto;text-align:center;">
-<h2>Pending</h2>
-<table  CELLPADDING="3" CELLSPACING="1" border="1">
+<center style="margin-top:5%;">
+<h2>Pending</h2></br>
+<table  CELLPADDING="3" CELLSPACING="1" border="1" style="text-align:center;">
 <tr>
 <td> Seller Name </td>
 <td> Item Name </td>
@@ -46,7 +46,8 @@ for(String line: PendingSingle){
 <br>
 <br>
 <h2>History</h2>
-<table  CELLPADDING="3" CELLSPACING="1" border="1">
+</br>
+<table  CELLPADDING="3" CELLSPACING="1" border="1" style="text-align:center;">
 <tr>
 <td> Seller Name </td>
 <td> Item Name </td>
@@ -83,7 +84,7 @@ for(String line: HistorySingle){
 <br>
 <%String output="FOS?from=36&uid="+uid;%>
 <a href=<%out.println(output); %>><h3>Home</h3></a>
-</div>
+<center style="margin-top:5%;">
 </body>
 
 </body>

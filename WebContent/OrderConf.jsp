@@ -4,23 +4,27 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="EditDetails.css">
+<link rel="stylesheet" type="text/css" href="Menu.css">
 <title>Order Confirmation page</title>
 </head>
 <body>
-<%String UserData = request.getAttribute("UserData").toString();
-String ArrayUser[] = UserData.split("@");%>
+<%String DataUser = request.getAttribute("UserData").toString();
+String ArrayUser[] = DataUser.split("@");%>
 
-<div style="width:100%;height = 50px;background:#F9EECF;border:1px dotted black;">
-<center>
-<a href="/FOS/Wallet.jsp?UserData=<%out.println(UserData); %>"><div style="width:20%;height = 50px;background:#F9EECF;border:1px dotted black;float:left;">wallet</div></a>
-<a href="editdetails"><div style="width:20%;height = 50px;background:#F9EECF;border:1px dotted black;float:left;">edit details</div></a>
-<a href="svag"><div style="width:20%;height = 50px;background:#F9EECF;border:1px dotted black;float:left;">history</div></a>
-<a href="Home.jsp"><div style="width:20%;height = 50px;background:#F9EECF;border:1px dotted black;float:left;">Logout</div></a>
-</center>
+<div class="menu3">
+    <a href="/FOS/Wallet.jsp?UserData=<%out.println(DataUser); %>">Wallet</a>
+    <% String edit="/FOS/EditDetails.jsp?uid="+ArrayUser[0]; 
+String history="FOS?from=63&uid="+ArrayUser[0]; %>
+    <a href=<%out.println(edit); %>>Edit Details</a>
+    <a href=<%out.println(history); %>>History</a>
+    <a href="Home.jsp">Logout</a>
 </div>
+<div class="menu3sub"> </div>
 
-<h1>welcome <%out.println(ArrayUser[1]); %></h1>
-<h2>your wallet contains <%out.println(ArrayUser[2]); %></h2>
+<div style="float:left;margin-top:3%;margin-left:10%;">
+<h1>Welcome <%out.println(ArrayUser[1]); %></h1>
+<h2>Your wallet contains <%out.println(ArrayUser[2]); %></h2>
 
 <%
 String ItemData = request.getAttribute("ItemData").toString();
@@ -28,9 +32,11 @@ String ItemDataArray[] = ItemData.split("//");
 String SellerData = request.getAttribute("SellerData").toString();
 String SellerDataArray[] = SellerData.split("@");
 %>
-
+</div>
+<div style="float:right;margin-top:3%;margin-right:10%;text-align:center;">
 <h3> Items of <%out.println(SellerDataArray[1]); %></h3>
-<div style="width:100%;background:#F9EECF;border:1px dotted black;text-align:center;">
+
+
 
 <TABLE BORDER="1" CELLPADDING="3" CELLSPACING="1">
 	<TR>
@@ -54,24 +60,33 @@ for(String s : ItemDataArray)
         <TD><%=ItemArray[4] %></TD>
         <TD><%=ItemArray[2] %></TD>
         <TD><%=ItemArray[3] %></TD>
-        <TD><%=ItemArray[5] %></TD>
-        <TD><%=ItemArray[6] %></TD>
+        <TD>
+        <%if(ItemArray[5].equals("1")) out.println("Veg");
+        else out.println("Non-Veg");
+        %>
+        </TD>
+        <TD>
+		<%if(ItemArray[6].equals("1")) out.println("North Indian");
+        else if(ItemArray[6].equals("2")) out.println("Chinese");
+        else out.println("South Indian");%>
+		</TD>
         <TD><%=ItemArray[7] %></TD>
 	</TR>
 
 <%}%>
 </TABLE>
-</div>
+
 <FORM action="FOS">
 <input type = "hidden" name = "UserData" value = <% out.println(ArrayUser[0]); %>>
 <input type = "hidden" name = "SellerData" value = <% out.println(SellerDataArray[0]); %>>
 <input type = "hidden" name = "ItemData" value = <% out.println(outString); %>>
-<input type = "hidden" name = "from" value = "13">
-<input type="submit" name="submitvalue" value="Submit">
+<input type = "hidden" name = "from" value = "13"><br>
+<input type="submit" name="submitvalue" value="Submit" class="action1">
 </FORM>
-
-<a href="/FOS/FOS?from=3&UserData=<%= UserData %>&SellerData=<%=SellerData %>">
+<br>
+<a href="/FOS/FOS?from=3&UserData=<%= DataUser %>&SellerData=<%=SellerData %>">
  Change the order
  </a>
+ </div>
 </body>
 </html>
